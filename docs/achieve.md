@@ -25,25 +25,29 @@ A key differentiator in the evaluation criteria (Phase 2) is demonstrating **Pro
 Here are the key mathematical relationships and formulas used throughout the XGBoost predictive modeling process:
 
 #### A. Evaluation Metric (RMSE)
+
 The competition's primary quantitative metric, Root Mean Squared Error, is calculated as:
 $$ \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2} $$
-*Where $y_i$ is the actual yield, $\hat{y}_i$ is the predicted yield, and $n$ is the number of test observations.*
+_Where $y_i$ is the actual yield, $\hat{y}_i$ is the predicted yield, and $n$ is the number of test observations._
 
 #### B. Feature Engineering
+
 **Residence-Time Proxy ($\tau_{\text{proxy}}$):**
 $$ \tau_{\text{proxy}} = \frac{L}{Q} $$
-*Where $L$ is the reactor length (`length_m`) and $Q$ is the volumetric flow rate (`flow_rate_L_min`).*
+_Where $L$ is the reactor length (`length_m`) and $Q$ is the volumetric flow rate (`flow_rate_L_min`)._
 
 **Mean Temperature ($T_{\text{mean}}$):**
 $$ T_{\text{mean}} = \frac{T_{\text{inlet}} + T_{\text{jacket}}}{2} $$
-*Where $T_{\text{inlet}}$ is `inlet_temperature_K` and $T_{\text{jacket}}$ is `jacket_temperature_K`.*
+_Where $T_{\text{inlet}}$ is `inlet_temperature_K` and $T_{\text{jacket}}$ is `jacket_temperature_K`._
 
 #### C. Model Training (Gradient Boosting Update)
+
 At each step $m$, the model is updated by adding a new decision tree $h_m(x)$ scaled by the learning rate $\eta$:
 $$ F_m(x) = F_{m-1}(x) + \eta h_m(x) $$
-*Where $F_m(x)$ is the new ensemble prediction and $F_{m-1}(x)$ is the previous prediction.*
+_Where $F_m(x)$ is the new ensemble prediction and $F_{m-1}(x)$ is the previous prediction._
 
 #### D. Physical Constraints (Prediction Clipping)
+
 To ensure the model respects the physical reality of chemical yields (0% to 100%), predictions are clipped:
 $$ y_{\text{clipped}} = \min(100, \max(0, y_{\text{predicted}})) $$
 
@@ -54,6 +58,7 @@ $$ y_{\text{clipped}} = \min(100, \max(0, y_{\text{predicted}})) $$
 To successfully run the model and generate the final predictions, the following features are strictly required for input, along with the expected output format.
 
 #### Input Features (7 Total)
+
 1. **`flow_rate_L_min`**: Volumetric flow rate of the reactant mixture (L/min)
 2. **`concentration_mol_L`**: Inlet concentration of Reactant A (mol/L)
 3. **`inlet_temperature_K`**: Temperature of the feed entering the reactor (K)
@@ -63,4 +68,5 @@ To successfully run the model and generate the final predictions, the following 
 7. **`mean_T`**: Engineered feature ($(T_{\text{inlet}} + T_{\text{jacket}})/2$)
 
 #### Target Output
-*   **`overall_yield`**: The final yield percentage of Product B at the reactor exit (constrained between 0 and 100). This must be exported as a `.csv` containing exactly 50 rows matching the `test_dataset.csv` order, with values rounded to at least 3 decimal places.
+
+- **`overall_yield`**: The final yield percentage of Product B at the reactor exit (constrained between 0 and 100). This must be exported as a `.csv` containing exactly 50 rows matching the `test_dataset.csv` order, with values rounded to at least 3 decimal places.

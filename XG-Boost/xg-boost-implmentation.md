@@ -22,14 +22,14 @@ The training dataset contains 150 observations.
 
 ### Features
 
-| Feature | Description |
-|---|---|
-| `flow_rate_L_min` | Flow rate in L/min |
-| `concentration_mol_L` | Concentration in mol/L |
-| `inlet_temperature_K` | Inlet temperature in Kelvin |
-| `length_m` | Reactor length in meters |
+| Feature                | Description                  |
+| ---------------------- | ---------------------------- |
+| `flow_rate_L_min`      | Flow rate in L/min           |
+| `concentration_mol_L`  | Concentration in mol/L       |
+| `inlet_temperature_K`  | Inlet temperature in Kelvin  |
+| `length_m`             | Reactor length in meters     |
 | `jacket_temperature_K` | Jacket temperature in Kelvin |
-| `overall_yield` | Target variable (%) |
+| `overall_yield`        | Target variable (%)          |
 
 The test dataset contains 50 observations without the target variable.
 
@@ -347,3 +347,4 @@ Final model training
 Test-set prediction
 Prediction validation
 Submission file generation
+```

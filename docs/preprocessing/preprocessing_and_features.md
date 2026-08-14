@@ -15,6 +15,7 @@ The predictive model uses "Engineering Intuition" to transform raw inputs into p
 To successfully run the model and generate the final predictions, the following features are extracted or engineered:
 
 ### Input Features (7 Total)
+
 1. **`flow_rate_L_min`**: Volumetric flow rate of the reactant mixture (L/min).
 2. **`concentration_mol_L`**: Inlet concentration of Reactant A (mol/L).
 3. **`inlet_temperature_K`**: Temperature of the feed entering the reactor (K).
@@ -24,4 +25,5 @@ To successfully run the model and generate the final predictions, the following 
 7. **`mean_T`**: Engineered feature ($(T_{\text{inlet}} + T_{\text{jacket}})/2$), representing the mean thermal environment.
 
 ### Target Output
-*   **`overall_yield`**: The final yield percentage of Product B at the reactor exit. The final output is constrained between 0 and 100.
+
+- **`overall_yield`**: The final yield percentage of Product B at the reactor exit. The final output is constrained between 0 and 100.
