@@ -25,13 +25,13 @@ Our solution is built on a structured pipeline, transforming raw reactor paramet
 graph TD
     A[Raw Datasets] --> B(Feature Engineering)
     B -->|residence_proxy = L/Q| C[Pre-processed Data]
-    B -->|mean_T = T_in + T_jacket / 2| C
+    B -->|mean_T = (T_in + T_jacket) / 2| C
 
     C --> D[Model Training]
 
     D --> E[XGBoost]
     D --> F[Gaussian Process Regression]
-    D --> G[Support Vector Machine]
+    D --> G[Support Vector Regression]
 
     E --> H(Physical Constraint Clipping: 0-100%)
     F --> H
@@ -52,6 +52,7 @@ For an in-depth breakdown of our pipeline, see our [Architecture Documentation](
 - **[`/datasets`](./datasets)**: The raw training and testing CSV files.
 - **[`/XG-Boost`](./XG-Boost)**: Our XGBoost implementation (Highest pure accuracy).
 - **[`/GPR`](./GPR)**: Our Gaussian Process Regression model (Uncertainty bounds & physical reality).
+- **[`/SVR`](./SVR)**: Our Support Vector Regression model.
 - **[`/predictions`](./predictions)**: The final generated CSV predictions ready for submission.
 
 ---
