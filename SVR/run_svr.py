@@ -11,7 +11,7 @@ def calculate_rmse(y_true, y_pred):
     return math.sqrt(np.mean((y_true - y_pred)**2))
 
 def main():
-    base_dir = r"c:\Users\Ankita\OneDrive\Desktop\ML_hackathon_KGP"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     train_path = os.path.join(base_dir, "datasets", "train_dataset.csv")
     test_path = os.path.join(base_dir, "datasets", "test_dataset.csv")
 
