@@ -14,7 +14,7 @@
 
 Welcome to **Team QuarterCodes'** repository for the IITKGP ML Hackathon! This project focuses on predicting the **overall yield** of a continuous flow reactor using machine learning models.
 
-Our approach involves rigorous feature engineering and physical constraint mapping (Yield $\in [0, 100]\%$) to build surrogate models that not only predict accurately but also respect the underlying chemical kinetics. Over the course of the hackathon, we implemented, tuned, and evaluated **five distinct mathematical architectures** to find the optimal solution.
+Our approach involves rigorous feature engineering and physical constraint mapping (Yield $\in [0, 100]$%) to build surrogate models that not only predict accurately but also respect the underlying chemical kinetics. Over the course of the hackathon, we implemented, tuned, and evaluated **five distinct mathematical architectures** to find the optimal solution.
 
 ---
 
