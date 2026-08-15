@@ -1,35 +1,44 @@
 # SVR Implementation Fixes
 
-This document outlines the fixes applied to the SVR implementation files (`SVR/run_svr.py` and `SVR/ML_Hackathon_SVR_Final.ipynb`) based on the code review feedback.
+This document outlines the fixes and optimizations applied to the SVR implementation files (`SVR/run_svr.py` and `SVR/ML_Hackathon_SVR_Final.ipynb`).
 
-## 1. Feature Multicollinearity Fix
+## 1. Feature Multicollinearity & Selection
 
-**Issue:** The newly engineered features (`residence_proxy` and `mean_T`) were mathematical combinations of four existing features (`length_m`, `flow_rate_L_min`, `inlet_temperature_K`, and `jacket_temperature_K`). Keeping the original features alongside the new ones distorted the Euclidean distance metric used by the RBF kernel in SVR, causing degraded performance (RMSE increased from 21.7 to 22.09).
-
-**Fix:** Dropped the four original redundant features from the training pipeline. The model now only trains on:
-- `concentration_mol_L`
-- `residence_proxy`
-- `mean_T`
+**Context:** The engineered features (`residence_proxy` and `mean_T`) are mathematical combinations of four existing features (`length_m`, `flow_rate_L_min`, `inlet_temperature_K`, and `jacket_temperature_K`).
+**Experiment:** We attempted to drop the 4 original redundant features to reduce multicollinearity, training a 3-feature SVR model.
+**Result:** The RBF kernel struggled with the reduced feature space, causing the RMSE to severely degrade to **~27.43**.
+**Final Fix:** Reverted to using all **7 documented features**. Retaining original feature variance is crucial for the distance-based SVR to map the data correctly, achieving a stabilized RMSE of **22.0950**.
 
 *Files modified:*
 - `SVR/run_svr.py`
 - `SVR/ML_Hackathon_SVR_Final.ipynb`
 
-## 2. Hardcoded Hyperparameters in Notebook
+## 2. Dynamic Hyperparameter Tuning in Notebook
 
-**Issue:** The Jupyter notebook `SVR/ML_Hackathon_SVR_Final.ipynb` claimed to perform `GridSearchCV` hyperparameter tuning but effectively bypassed it by hardcoding a single set of parameters into the `param_grid` (`[300]`, `[0.1]`, and `[0.5]`). Furthermore, the KFold loop was hardcoded to use those parameters rather than the best parameters discovered by the search.
+**Issue:** The Jupyter notebook `SVR/ML_Hackathon_SVR_Final.ipynb` claimed to perform `GridSearchCV` hyperparameter tuning but effectively bypassed it by hardcoding a single set of parameters. Furthermore, the KFold loop used hardcoded parameters rather than those discovered by the search.
 
 **Fix:** 
-- Restored the `param_grid` to use actual arrays for searching:
-  - `svr__C`: `[0.1, 1, 10, 50, 100, 150, 200, 300, 500]`
-  - `svr__gamma`: `['scale', 'auto', 0.001, 0.01, 0.1, 1.0]`
-  - `svr__epsilon`: `[0.01, 0.1, 0.5, 1.0, 2.0]`
-- Replaced the hardcoded `.set_params()` in the KFold evaluation loop with `pipeline.set_params(**grid_search.best_params_)` so that it uses the dynamically found optimal parameters.
+- Restored the full `param_grid` arrays for `svr__C`, `svr__gamma`, and `svr__epsilon`.
+- Replaced the hardcoded `.set_params()` in the KFold evaluation loop with `pipeline.set_params(**grid_search.best_params_)` to ensure the dynamically found optimal parameters are utilized.
 
 *Files modified:*
 - `SVR/ML_Hackathon_SVR_Final.ipynb`
 
-## 3. Hardcoded Windows Paths (Previously Fixed)
+## 3. Google Colab Compatibility & Pathing
 
-**Issue:** Hardcoded absolute Windows paths in `run_svr.py` caused a `FileNotFoundError` on macOS or Linux environments.
-**Fix:** This was proactively fixed in the script by replacing the absolute path with a relative `os.path.dirname` calculation, ensuring universal compatibility.
+**Issue:** Hardcoded absolute Windows paths in `run_svr.py` and the notebook caused a `FileNotFoundError` across different OS and cloud environments.
+**Fix:** 
+- Modified the script using relative `os.path.dirname` logic.
+- Injected a `RUNNING_IN_COLAB` toggle flag at the top of the notebook, allowing seamless dataset loading regardless of whether it's run locally or in a Google Colab session.
+
+*Files modified:*
+- `SVR/run_svr.py`
+- `SVR/ML_Hackathon_SVR_Final.ipynb`
+
+## 4. Visualization & Flow Parity
+
+**Issue:** The SVR notebook lacked the visualization code provided in the XGBoost and GPR notebooks, breaking the uniform flow of the project.
+**Fix:** Appended a visualization section to the SVR notebook that plots **Training Fit (True vs Predicted Yield)** using matplotlib and seaborn.
+
+*Files modified:*
+- `SVR/ML_Hackathon_SVR_Final.ipynb`

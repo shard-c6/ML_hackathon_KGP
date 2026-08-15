@@ -1,68 +1,57 @@
-# ML Hackathon — SVR Solution (Current Implementation)
+# 📈 ML Hackathon — SVR Solution (Final Implementation)
 
-## Overview
+## 🎯 Overview
 
-This repository contains our Support Vector Regression (SVR) solution for the ML Hackathon — Fugacity 2026, IIT Kharagpur.
+This repository contains our **Support Vector Regression (SVR)** solution for the ML Hackathon — Fugacity 2026, IIT Kharagpur.
 
-The task is to predict `overall_yield` from industrial chemical-process data containing variables such as flow rate, concentration, temperature, and reactor length.
+The primary objective is to predict `overall_yield` from continuous flow reactor data containing variables such as flow rate, concentration, temperature, and reactor length.
 
-This document covers the current 7-feature experiment approach using physical engineering features alongside raw inputs.
+This document covers the **7-feature experiment approach**, which integrates engineered physical features alongside raw inputs, and details the final notebook workflow.
 
 ---
 
-## Dataset
+## 📊 Dataset
 
-The training dataset contains 150 observations.
+The training dataset contains **150 observations**, while the test dataset contains **50 hidden observations**.
 
-### Features
+### Features Used
 
-| Feature                | Description                  |
-| ---------------------- | ---------------------------- |
-| `flow_rate_L_min`      | Flow rate in L/min           |
-| `concentration_mol_L`  | Concentration in mol/L       |
-| `inlet_temperature_K`  | Inlet temperature in Kelvin  |
-| `length_m`             | Reactor length in meters     |
+| Feature | Description |
+| :--- | :--- |
+| `flow_rate_L_min` | Flow rate in L/min |
+| `concentration_mol_L` | Concentration in mol/L |
+| `inlet_temperature_K` | Inlet temperature in Kelvin |
+| `length_m` | Reactor length in meters |
 | `jacket_temperature_K` | Jacket temperature in Kelvin |
-| `overall_yield`        | Target variable (%)          |
-
-The test dataset contains 50 observations without the target variable.
+| `overall_yield` | **Target variable (%)** |
 
 ---
 
-## Support Vector Regression (SVR)
+## 🤖 Support Vector Regression (SVR)
 
-SVR is a variant of Support Vector Machines (SVM) used for regression tasks. It relies on finding a margin defined by support vectors, aiming to fit the errors within a threshold (epsilon). Using a Radial Basis Function (RBF) kernel allows the model to learn complex, non-linear relationships.
+SVR is a variant of Support Vector Machines (SVM) used for regression tasks. It relies on finding a margin defined by support vectors, aiming to fit the errors within a threshold ($\epsilon$). Using a **Radial Basis Function (RBF) kernel** allows the model to map the data into a higher-dimensional space and learn complex, non-linear relationships.
 
-## Feature Engineering
+### Feature Engineering
 
-Two engineered features were retained after experimentation.
+Two domain-specific physical features were engineered to provide the model with thermodynamic and kinetic context:
 
-### 1. Residence-Time Proxy
-
-A proxy for residence time was created using:
-
-`residence_proxy = length_m / flow_rate_L_min`
-
-### 2. Mean Temperature
-
-The mean temperature feature was calculated as:
-
-`mean_T = (inlet_temperature_K + jacket_temperature_K) / 2`
+1. **Residence-Time Proxy:**  
+   `residence_proxy = length_m / flow_rate_L_min`
+2. **Mean Temperature:**  
+   `mean_T = (inlet_temperature_K + jacket_temperature_K) / 2`
 
 **Final Model Features (7):**
-- flow_rate_L_min
-- concentration_mol_L
-- inlet_temperature_K
-- length_m
-- jacket_temperature_K
-- residence_proxy
-- mean_T
+`flow_rate_L_min`, `concentration_mol_L`, `inlet_temperature_K`, `length_m`, `jacket_temperature_K`, `residence_proxy`, `mean_T`.
 
-## Hyperparameter Tuning
+*(Note: Experiments limiting to 3 features degraded RMSE to ~27.43, proving the necessity of the raw feature variance for the RBF kernel).*
 
-We ran a GridSearchCV across C, gamma, and epsilon with the RBF kernel. 
+---
 
-### Final Configuration
+## ⚙️ Pipeline & Tuning
+
+We ran a `GridSearchCV` to optimize the SVR hyperparameters.
+
+### Final Best Configuration
 
 ```python
 Pipeline(steps=[
@@ -71,41 +60,35 @@ Pipeline(steps=[
 ])
 ```
 
-## Validation
+---
 
-A rigorous 5-fold cross-validation (`KFold(n_splits=5, shuffle=True, random_state=42)`) was used to score the model against the `overall_yield`.
+## 🧪 Validation & Results
 
-Because yield is physically bounded between 0% and 100%, we tested physical clipping:
+A rigorous **5-fold cross-validation** (`KFold(n_splits=5, shuffle=True, random_state=42)`) was used to score the model against the `overall_yield`.
+
+Because the chemical yield is physically bounded between 0% and 100%, we applied physical clipping:
 `y_clipped = np.clip(y, 0, 100)`
 
-### Clipping Result
-- **Raw RMSE:** 23.1076
-- **Clipped RMSE:** 22.0950
-- **Clipping Helped:** True (improved by 1.0126)
+### Performance Metrics
+- **Raw RMSE:** `23.1076`
+- **Clipped RMSE:** `22.0950`
+- **Clipping Improvement:** `1.0126`
 
-### Fold RMSEs (Clipped)
-1. 24.0814
-2. 19.9064
-3. 24.9621
-4. 20.0496
-5. 21.4757
-
-**Mean CV RMSE:** 22.0950  
-**Standard deviation:** 2.3197
+**Mean CV RMSE:** `22.0950` ± `2.3197`
 
 ---
 
-## Output Shape
+## 🌐 Google Colab & Reproducibility
 
-The final output is a target prediction array for the 50 hidden test observations, which was also clipped (0 to 100) and saved.
+The final SVR notebook (`SVR/ML_Hackathon_SVR_Final.ipynb`) is completely **Google Colab-ready**. 
+It includes a dynamic `RUNNING_IN_COLAB` flag at the top of the notebook that automatically switches data paths, ensuring the workflow runs seamlessly in both local environments and the cloud.
 
-**Sample predictions path:** `SVR_predictions.csv`
+Additionally, a **Visualization Section** has been appended to plot the **Training Fit (True vs Predicted Yield)**, maintaining parity with the XGBoost and GPR workflows for the Phase 2 pitch.
 
-## Model Comparison
+---
 
-Comparing this 7-feature model against our earlier 5-feature SVR Baseline (RMSE 21.7020):
-- **Difference:** The new model is worse by 0.3930 absolute RMSE (1.81%).
+## 📝 Conclusion
 
-## Conclusion
+Although physically valid features (residence proxy, mean temperature) were added and clipping improved the RMSE considerably, the increased dimensionality (7 features vs 5) with a very small observation limit (150 rows) led to slight overfitting when mapped via the RBF kernel. 
 
-Although physically valid features (residence proxy, mean temperature) were added and clipping improved the RMSE considerably, the increased dimensionality (7 features vs 5) with a very small observation limit (150 rows) led to slight overfitting when mapped via the RBF kernel. The baseline 5-feature SVR model performed marginally better.
+The baseline **5-feature SVR model (RMSE 21.70)** performed marginally better by **~0.39 RMSE (1.81%)**.
