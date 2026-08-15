@@ -24,11 +24,7 @@ def main():
         df['mean_T'] = (df['inlet_temperature_K'] + df['jacket_temperature_K']) / 2.0
 
     features = [
-        "flow_rate_L_min",
         "concentration_mol_L",
-        "inlet_temperature_K",
-        "length_m",
-        "jacket_temperature_K",
         "residence_proxy",
         "mean_T"
     ]
