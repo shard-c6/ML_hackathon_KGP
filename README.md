@@ -38,25 +38,25 @@ Our solution is built on a structured pipeline, transforming raw reactor paramet
 
 ```mermaid
 graph TD
-    A[Raw Datasets] --> B(Feature Engineering)
-    B -->|residence_proxy = L/Q| C[Pre-processed Data]
-    B -->|mean_T = (T_in + T_jacket) / 2| C
+    A["Raw Datasets"] --> B("Feature Engineering")
+    B -->|"residence_proxy = L/Q"| C["Pre-processed Data"]
+    B -->|"mean_T = (T_in + T_jacket) / 2"| C
 
-    C --> D{Model Training & Tuning}
+    C --> D{"Model Training & Tuning"}
 
-    D --> E[XGBoost]
-    D --> F[Random Forest]
-    D --> G[Gaussian Process]
-    D --> J[Support Vector]
-    D --> K[ElasticNet Poly]
+    D --> E["XGBoost"]
+    D --> F["Random Forest"]
+    D --> G["Gaussian Process"]
+    D --> J["Support Vector"]
+    D --> K["ElasticNet Poly"]
 
-    E --> H(Physical Constraint Clipping: 0-100%)
+    E --> H("Physical Constraint Clipping: 0-100%")
     F --> H
     G --> H
     J --> H
     K --> H
 
-    H --> I((Final Yield Predictions))
+    H --> I(("Final Yield Predictions"))
 ```
 
 For an in-depth breakdown of our pipeline design choices, see our [Architecture Documentation](docs/architecture.md).
